@@ -1,0 +1,8 @@
+name: ESTrading
+version: ${project.version}
+main: org.enchantedskies.estrading.ESTrading
+api-version: 1.16
+commands:
+  trade:
+    description: Sends trade request to a player
+    usage: /trade <player>
