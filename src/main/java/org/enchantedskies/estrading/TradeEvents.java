@@ -56,6 +56,24 @@ public class TradeEvents implements Listener {
         Inventory clickedInv = event.getClickedInventory();
         if (clickedInv == null) return;
         if (clickedInv.getType() == InventoryType.PLAYER) return;
+        InventoryAction invAction = event.getAction();
+        HashSet<InventoryAction> bannedActions = new HashSet<>();
+        bannedActions.add(InventoryAction.CLONE_STACK);
+        bannedActions.add(InventoryAction.COLLECT_TO_CURSOR);
+        bannedActions.add(InventoryAction.DROP_ALL_CURSOR);
+        bannedActions.add(InventoryAction.DROP_ALL_SLOT);
+        bannedActions.add(InventoryAction.DROP_ONE_CURSOR);
+        bannedActions.add(InventoryAction.DROP_ONE_SLOT);
+        bannedActions.add(InventoryAction.MOVE_TO_OTHER_INVENTORY); //CHECK MORE
+        bannedActions.add(InventoryAction.SWAP_WITH_CURSOR); //CHECK MORE
+        bannedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD); //CHECK MORE
+        bannedActions.add(InventoryAction.HOTBAR_SWAP); //CHECK MORE
+        for (InventoryAction currAction : bannedActions) {
+            if (invAction == currAction) {
+                event.setCancelled(true);
+                break;
+            }
+        }
         int invSlot = event.getSlot();
         // Limits usage of trading inventory to top left section
         if ((invSlot % 9) <= 3 && invSlot <= 39) {
