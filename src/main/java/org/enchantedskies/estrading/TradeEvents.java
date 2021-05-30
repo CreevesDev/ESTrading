@@ -64,10 +64,33 @@ public class TradeEvents implements Listener {
         bannedActions.add(InventoryAction.DROP_ALL_SLOT);
         bannedActions.add(InventoryAction.DROP_ONE_CURSOR);
         bannedActions.add(InventoryAction.DROP_ONE_SLOT);
-        bannedActions.add(InventoryAction.MOVE_TO_OTHER_INVENTORY); //CHECK MORE
+
         bannedActions.add(InventoryAction.SWAP_WITH_CURSOR); //CHECK MORE
-        bannedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD); //CHECK MORE
-        bannedActions.add(InventoryAction.HOTBAR_SWAP); //CHECK MORE
+
+        bannedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD); //CHECK ME
+        bannedActions.add(InventoryAction.HOTBAR_SWAP); //CHECK ME
+
+        if (invAction == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+            if (clickedInv.getType() != InventoryType.CHEST) {
+                ItemStack currItem = event.getCurrentItem();
+                if (currItem == null) return;
+                int firstEmptySlot = -1;
+                Inventory tradeInv = event.getWhoClicked().getOpenInventory().getTopInventory();
+                for (int i = 0; i < 40; i++) {
+                    if (i % 9 == 5) i += 4;
+                    ItemStack thisItem = tradeInv.getItem(i);
+                    if (thisItem == null || thisItem.getType() == Material.AIR) {
+                        firstEmptySlot = i;
+                        break;
+                    }
+                }
+                if (firstEmptySlot >= 0) {
+                    clickedInv.setItem(event.getSlot(), new ItemStack(Material.AIR));
+                    tradeInv.setItem(firstEmptySlot, currItem);
+                }
+            } else event.setCancelled(true);
+        }
+
         for (InventoryAction currAction : bannedActions) {
             if (invAction == currAction) {
                 event.setCancelled(true);
@@ -109,6 +132,7 @@ public class TradeEvents implements Listener {
         if (!ESTrading.tradeManager.getTradingPlayers().contains(playerUUID)) return;
         Inventory clickedInv = event.getInventory();
         if (clickedInv.getType() == InventoryType.PLAYER) return;
+        // CHECK ME
         Set<Integer> invSlots = event.getInventorySlots();
         for (int currSlot: invSlots) {
             if ((currSlot % 9) <= 3 && currSlot <= 39) continue;
