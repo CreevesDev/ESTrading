@@ -23,8 +23,15 @@ public class TradeCmd implements CommandExecutor {
         if (tradeReceiver == null) {
             player.sendMessage("§cIt looks like that player does not exist! Try /trade <player_name>.");
             return true;
+        } else if (player == tradeReceiver) {
+            player.sendMessage("§cYou can't trade with yourself!");
+            return true;
+        } else  if (ESTrading.tradeManager.getTradingPlayers().contains(tradeReceiver.getUniqueId())) {
+            player.sendMessage("§cThat players is currently in a trade!");
+            return true;
         }
-        new TradeGUI(player, tradeReceiver);
+        tradeReceiver.sendMessage("§7You've received a trade request from §e" + player.getName());
+        ESTrading.tradeManager.startTrade(player, tradeReceiver);
         return true;
     }
 }
