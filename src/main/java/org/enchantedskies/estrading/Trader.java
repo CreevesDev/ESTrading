@@ -12,7 +12,7 @@ import java.util.*;
 
 public class Trader {
     private final Inventory inventory = Bukkit.createInventory(null, 54, "Trading Panel");
-    private HashMap<Integer, ItemStack> offeredItems = new HashMap<>();
+    private final HashMap<Integer, ItemStack> offeredItems = new HashMap<>();
     private final UUID playerUUID;
     private String status;
 

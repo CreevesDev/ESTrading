@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public class TradeSession {
     private final Trader trader1;
@@ -56,6 +55,12 @@ public class TradeSession {
     }
 
     public void cancelTrade() {
+        Player player1 = Bukkit.getPlayer(trader1.getPlayerUUID());
+        Player player2 = Bukkit.getPlayer(trader2.getPlayerUUID());
+        Collection<ItemStack> itemSet1 = trader1.sortAndGetOfferedItems();
+        Collection<ItemStack> itemSet2 = trader2.sortAndGetOfferedItems();
+        giveItemsToPlayer(itemSet1, player1);
+        giveItemsToPlayer(itemSet2, player2);
         trader1.cancelTrade();
         trader2.cancelTrade();
     }

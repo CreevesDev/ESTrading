@@ -5,8 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -64,9 +66,6 @@ public class TradeEvents implements Listener {
         bannedActions.add(InventoryAction.DROP_ALL_SLOT);
         bannedActions.add(InventoryAction.DROP_ONE_CURSOR);
         bannedActions.add(InventoryAction.DROP_ONE_SLOT);
-
-//        bannedActions.add(InventoryAction.SWAP_WITH_CURSOR); //CHECK MORE
-
         bannedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD); //CHECK ME
         bannedActions.add(InventoryAction.HOTBAR_SWAP); //CHECK ME
 
@@ -164,6 +163,24 @@ public class TradeEvents implements Listener {
                 }
             }
         }.runTaskLater(plugin, 1);
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (event.getEntity().getOpenInventory().getType() != InventoryType.CHEST) {
+            UUID playerUUID = event.getEntity().getUniqueId();
+            if (!ESTrading.tradeManager.getTradingPlayers().contains(playerUUID)) return;
+            ESTrading.tradeManager.endTrade(playerUUID);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDisconnect(PlayerQuitEvent event) {
+        if (event.getPlayer().getOpenInventory().getType() != InventoryType.CHEST) {
+            UUID playerUUID = event.getPlayer().getUniqueId();
+            if (!ESTrading.tradeManager.getTradingPlayers().contains(playerUUID)) return;
+            ESTrading.tradeManager.endTrade(playerUUID);
+        }
     }
 
     @EventHandler
