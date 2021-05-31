@@ -124,6 +124,7 @@ public class Trader {
     public void addItem(ItemStack item, int itemLoc) {
         if ((itemLoc % 9) <= 3 && itemLoc <= 39) {
             offeredItems.put(itemLoc, item);
+            ESTrading.logger.logItemAdd(Bukkit.getPlayer(playerUUID), item);
         }
     }
 
@@ -135,9 +136,10 @@ public class Trader {
         }
     }
 
-    public void removeItem(int itemLoc) {
+    public void removeItem(ItemStack item, int itemLoc) {
         if ((itemLoc % 9) <= 3 && itemLoc <= 39) {
             offeredItems.remove(itemLoc);
+            ESTrading.logger.logItemRemove(Bukkit.getPlayer(playerUUID), item);
         }
     }
 

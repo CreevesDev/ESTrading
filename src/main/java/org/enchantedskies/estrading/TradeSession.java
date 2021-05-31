@@ -42,6 +42,8 @@ public class TradeSession {
         giveItemsToPlayer(itemSet1, player2);
         trader1.completeTrade();
         trader2.completeTrade();
+        ESTrading.logger.logTradeCompleted(player1, itemSet2);
+        ESTrading.logger.logTradeCompleted(player2, itemSet1);
     }
 
     public void giveItemsToPlayer(Collection<ItemStack> itemSet, Player player) {
@@ -63,5 +65,7 @@ public class TradeSession {
         giveItemsToPlayer(itemSet2, player2);
         trader1.cancelTrade();
         trader2.cancelTrade();
+        ESTrading.logger.logTradeCancelled(player1, itemSet1);
+        ESTrading.logger.logTradeCancelled(player2, itemSet2);
     }
 }

@@ -91,7 +91,7 @@ public class TradeEvents implements Listener {
                     tradeInv.setItem(firstEmptySlot, currItem);
                 }
             } else {
-                ESTrading.tradeManager.getTrader(playerUUID).removeItem(event.getSlot());
+                ESTrading.tradeManager.getTrader(playerUUID).removeItem(event.getCursor(), event.getSlot());
                 ESTrading.tradeManager.getTradingPartner(playerUUID).removeDisplayItem(event.getSlot());
             }
         }
@@ -111,7 +111,7 @@ public class TradeEvents implements Listener {
                 public void run() {
                     ItemStack currItem = clickedInv.getItem(invSlot);
                     if (currItem == null || currItem.getType() == Material.AIR) {
-                        ESTrading.tradeManager.getTrader(playerUUID).removeItem(invSlot);
+                        ESTrading.tradeManager.getTrader(playerUUID).removeItem(event.getCursor(), invSlot);
                         ESTrading.tradeManager.getTradingPartner(playerUUID).removeDisplayItem(invSlot);
                     } else {
                         ESTrading.tradeManager.getTrader(playerUUID).addItem(currItem, invSlot);
