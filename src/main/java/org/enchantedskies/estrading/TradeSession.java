@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.List;
 
 public class TradeSession {
     private final Trader trader1;
@@ -26,22 +26,6 @@ public class TradeSession {
         return trader2;
     }
 
-    public void addItem(UUID playerUUID, ItemStack item, int itemLoc) {
-        if (trader1.getPlayerUUID() == playerUUID) {
-            trader1.addItem(item, itemLoc);
-        } else if (trader2.getPlayerUUID() == playerUUID) {
-            trader2.addItem(item, itemLoc);
-        }
-    }
-
-    public void removeItem(UUID playerUUID, int itemLoc) {
-        if (trader1.getPlayerUUID() == playerUUID) {
-            trader1.removeItem(itemLoc);
-        } else if (trader2.getPlayerUUID() == playerUUID) {
-            trader2.removeItem(itemLoc);
-        }
-    }
-
     public void updateStatus() {
         trader1.setTraderStatus(trader2.getStatus());
         trader2.setTraderStatus(trader1.getStatus());
@@ -53,15 +37,15 @@ public class TradeSession {
     public void completeTrade() {
         Player player1 = Bukkit.getPlayer(trader1.getPlayerUUID());
         Player player2 = Bukkit.getPlayer(trader2.getPlayerUUID());
-        HashSet<ItemStack> itemSet1 = trader1.getOfferedItems();
-        HashSet<ItemStack> itemSet2 = trader2.getOfferedItems();
+        Collection<ItemStack> itemSet1 = trader1.sortAndGetOfferedItems();
+        Collection<ItemStack> itemSet2 = trader2.sortAndGetOfferedItems();
         giveItemsToPlayer(itemSet2, player1);
         giveItemsToPlayer(itemSet1, player2);
         trader1.completeTrade();
         trader2.completeTrade();
     }
 
-    public void giveItemsToPlayer(HashSet<ItemStack> itemSet, Player player) {
+    public void giveItemsToPlayer(Collection<ItemStack> itemSet, Player player) {
         Inventory playerInv = player.getInventory();
         for (ItemStack item : itemSet) {
             HashMap<Integer, ItemStack> itemMap = playerInv.addItem(item);

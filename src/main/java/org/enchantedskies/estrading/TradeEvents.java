@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -55,7 +56,6 @@ public class TradeEvents implements Listener {
         if (!ESTrading.tradeManager.getTradingPlayers().contains(playerUUID)) return;
         Inventory clickedInv = event.getClickedInventory();
         if (clickedInv == null) return;
-        if (clickedInv.getType() == InventoryType.PLAYER) return;
         InventoryAction invAction = event.getAction();
         HashSet<InventoryAction> bannedActions = new HashSet<>();
         bannedActions.add(InventoryAction.CLONE_STACK);
@@ -65,13 +65,14 @@ public class TradeEvents implements Listener {
         bannedActions.add(InventoryAction.DROP_ONE_CURSOR);
         bannedActions.add(InventoryAction.DROP_ONE_SLOT);
 
-        bannedActions.add(InventoryAction.SWAP_WITH_CURSOR); //CHECK MORE
+//        bannedActions.add(InventoryAction.SWAP_WITH_CURSOR); //CHECK MORE
 
         bannedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD); //CHECK ME
         bannedActions.add(InventoryAction.HOTBAR_SWAP); //CHECK ME
 
         if (invAction == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
             if (clickedInv.getType() != InventoryType.CHEST) {
+                event.setCancelled(true);
                 ItemStack currItem = event.getCurrentItem();
                 if (currItem == null) return;
                 int firstEmptySlot = -1;
@@ -85,10 +86,15 @@ public class TradeEvents implements Listener {
                     }
                 }
                 if (firstEmptySlot >= 0) {
+                    ESTrading.tradeManager.getTrader(playerUUID).addItem(currItem, firstEmptySlot);
+                    ESTrading.tradeManager.getTradingPartner(playerUUID).addDisplayItem(currItem, firstEmptySlot);
                     clickedInv.setItem(event.getSlot(), new ItemStack(Material.AIR));
                     tradeInv.setItem(firstEmptySlot, currItem);
                 }
-            } else event.setCancelled(true);
+            } else {
+                ESTrading.tradeManager.getTrader(playerUUID).removeItem(event.getSlot());
+                ESTrading.tradeManager.getTradingPartner(playerUUID).removeDisplayItem(event.getSlot());
+            }
         }
 
         for (InventoryAction currAction : bannedActions) {
@@ -97,6 +103,8 @@ public class TradeEvents implements Listener {
                 break;
             }
         }
+        if (clickedInv.getType() == InventoryType.PLAYER) return;
+
         int invSlot = event.getSlot();
         // Limits usage of trading inventory to top left section
         if ((invSlot % 9) <= 3 && invSlot <= 39) {
@@ -132,7 +140,6 @@ public class TradeEvents implements Listener {
         if (!ESTrading.tradeManager.getTradingPlayers().contains(playerUUID)) return;
         Inventory clickedInv = event.getInventory();
         if (clickedInv.getType() == InventoryType.PLAYER) return;
-        // CHECK ME
         Set<Integer> invSlots = event.getInventorySlots();
         for (int currSlot: invSlots) {
             if ((currSlot % 9) <= 3 && currSlot <= 39) continue;
@@ -142,6 +149,7 @@ public class TradeEvents implements Listener {
         Map<Integer, ItemStack> addedItems = event.getNewItems();
         for (Integer slot : addedItems.keySet()) {
             ESTrading.tradeManager.getTrader(playerUUID).addItem(addedItems.get(slot), slot);
+            ESTrading.tradeManager.getTradingPartner(playerUUID).addDisplayItem(addedItems.get(slot), slot);
         }
     }
 
@@ -166,5 +174,10 @@ public class TradeEvents implements Listener {
         event.setCancelled(true);
     }
 
-    // ARROW PICKUP?
+    @EventHandler
+    public void onArrowPickup(PlayerPickupArrowEvent event) {
+        Player player = event.getPlayer();
+        if (!ESTrading.tradeManager.getTradingPlayers().contains(player.getUniqueId())) return;
+        event.setCancelled(true);
+    }
 }

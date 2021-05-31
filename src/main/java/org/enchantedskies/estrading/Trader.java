@@ -8,14 +8,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Trader {
     private final Inventory inventory = Bukkit.createInventory(null, 54, "Trading Panel");
-    private final HashSet<ItemStack> offeredItems = new HashSet<>();
+    private HashMap<Integer, ItemStack> offeredItems = new HashMap<>();
     private final UUID playerUUID;
     private String status;
 
@@ -45,7 +42,6 @@ public class Trader {
         skullMeta.setOwningPlayer(trader2);
         skullMeta.setDisplayName("§e" + trader.getName());
         playerHead.setItemMeta(skullMeta);
-
 
         List<String> confirmLore = new ArrayList<>();
         confirmLore.add("§eClick to confirm");
@@ -105,13 +101,29 @@ public class Trader {
         return status;
     }
 
-    public HashSet<ItemStack> getOfferedItems() {
-        return offeredItems;
+    public Collection<ItemStack> sortAndGetOfferedItems() {
+        Collection<ItemStack> sortedItems = new ArrayList<>();
+        for (ItemStack offeredItem : offeredItems.values()) {
+            for (ItemStack sortedItem : sortedItems) {
+                if (sortedItem.getAmount() == sortedItem.getMaxStackSize()) continue;
+                if (sortedItem.getType() != offeredItem.getType()) continue;
+                int spaceInStack = offeredItem.getMaxStackSize() - offeredItem.getAmount();
+                if (offeredItem.getAmount() > spaceInStack) {
+                    offeredItem.setAmount(offeredItem.getAmount() - spaceInStack);
+                    sortedItem.setAmount(sortedItem.getAmount() + spaceInStack);
+                } else {
+                    sortedItem.setAmount(sortedItem.getAmount() + offeredItem.getAmount());
+                    offeredItem.setAmount(0);
+                }
+            }
+            if (offeredItem.getAmount() > 0) sortedItems.add(offeredItem);
+        }
+        return sortedItems;
     }
 
     public void addItem(ItemStack item, int itemLoc) {
         if ((itemLoc % 9) <= 3 && itemLoc <= 39) {
-            offeredItems.add(item);
+            offeredItems.put(itemLoc, item);
         }
     }
 
@@ -125,7 +137,7 @@ public class Trader {
 
     public void removeItem(int itemLoc) {
         if ((itemLoc % 9) <= 3 && itemLoc <= 39) {
-            offeredItems.remove(inventory.getItem(itemLoc));
+            offeredItems.remove(itemLoc);
         }
     }
 
