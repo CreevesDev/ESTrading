@@ -39,19 +39,25 @@ public class TradeCmd implements CommandExecutor {
             player.sendMessage("§cYou can't trade with yourself!");
             return true;
         }
-        if (args.length == 2 && args[1].equals("deny")) {
-            if (!playerToReceiver.containsKey(tradeReceiver.getUniqueId())) {
-                player.sendMessage("§cYou do not have a trade request from this player!");
+        if (args.length > 1) {
+            if (args[1].equals("accept")) {
+                if (!playerToReceiver.containsKey(tradeReceiver.getUniqueId())) {
+                    player.sendMessage("§cYou do not have a trade request from this player!");
+                    return true;
+                }
+            } else if (args[1].equals("deny")) {
+                if (!playerToReceiver.containsKey(tradeReceiver.getUniqueId())) {
+                    player.sendMessage("§cYou do not have a trade request from this player!");
+                    return true;
+                }
+                playerToReceiver.remove(tradeReceiver.getUniqueId());
+                player.sendMessage("§cTrade request denied.");
+                tradeReceiver.sendMessage("§e" + player.getName() + " §7denied your trade request.");
+                return true;
+            } else {
+                player.sendMessage("§cIncorrect usage: Try /trade <player_name>.");
                 return true;
             }
-            playerToReceiver.remove(tradeReceiver.getUniqueId());
-            player.sendMessage("§cTrade request denied.");
-            tradeReceiver.sendMessage("§e" + player.getName() + " §7denied your trade request.");
-            return true;
-        }
-        if (args.length > 1) {
-            player.sendMessage("§cIncorrect usage: Try /trade <player_name>.");
-            return true;
         }
         if (ESTrading.tradeManager.getTradingPlayers().contains(tradeReceiver.getUniqueId())) {
             player.sendMessage("§cThat players is currently in a trade!");
@@ -73,17 +79,25 @@ public class TradeCmd implements CommandExecutor {
                 player.sendMessage("§cThe trade was not accepted.");
             }
         }.runTaskLater(plugin, 1200);
-        BaseComponent message = new TextComponent("§7You've received a trade request from §e" + player.getName() + " ");
-        TextComponent acceptText = new TextComponent("§a§l[ACCEPT]");
-        acceptText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade " + player.getName()));
-        acceptText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§7Click to accept trade request")));
-        message.addExtra(acceptText);
-        message.addExtra(new TextComponent(" "));
-        TextComponent denyText = new TextComponent("§c§l[DENY]");
-        denyText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade " + player.getName() + " deny"));
-        denyText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§7Click to accept trade request")));
-        message.addExtra(denyText);
-        tradeReceiver.spigot().sendMessage(message);
+        if (isBedrockPlayer(tradeReceiver)) {
+            tradeReceiver.sendMessage("§7You've received a trade request from §e" + player.getName() + " §7type §e/trade " + player.getName() + " accept §7to accept or §e/trade " + player.getName() + " deny §7to deny.");
+        } else {
+            BaseComponent message = new TextComponent("§7You've received a trade request from §e" + player.getName() + " ");
+            TextComponent acceptText = new TextComponent("§a§l[ACCEPT]");
+            acceptText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade " + player.getName()));
+            acceptText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§7Click to accept trade request")));
+            message.addExtra(acceptText);
+            message.addExtra(new TextComponent(" "));
+            TextComponent denyText = new TextComponent("§c§l[DENY]");
+            denyText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/trade " + player.getName() + " deny"));
+            denyText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§7Click to accept trade request")));
+            message.addExtra(denyText);
+            tradeReceiver.spigot().sendMessage(message);
+        }
         return true;
+    }
+
+    public boolean isBedrockPlayer(Player player) {
+        return player.getName().startsWith(".");
     }
 }
