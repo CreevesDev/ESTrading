@@ -16,16 +16,15 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class TradeCmd implements CommandExecutor {
-    ESTrading plugin = ESTrading.getInstance();
-    HashMap<UUID, UUID> playerToReceiver = new HashMap<>();
+    private final ESTrading plugin = ESTrading.getInstance();
+    private final HashMap<UUID, UUID> playerToReceiver = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Console cannot run this command!");
             return true;
         }
-        Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         if (args.length < 1) {
             player.sendMessage("§cIncorrect usage: Try /trade <player_name>.");

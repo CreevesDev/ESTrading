@@ -41,23 +41,23 @@ public class Logger {
     }
 
     public void logTradeCompleted(Player player, Collection<ItemStack> items) {
-        String stackInfo = "[COMPLETE] Sent to " + player.getName() + ": ";
-        if (items.size() == 0) stackInfo += "nothing, ";
+        StringBuilder stackInfo = new StringBuilder("[COMPLETE] Sent to " + player.getName() + ": ");
+        if (items.size() == 0) stackInfo.append("nothing, ");
         for (ItemStack item : items) {
-            stackInfo += item.getType().name() + " x" + item.getAmount() + ", ";
+            stackInfo.append(item.getType().name()).append(" x").append(item.getAmount()).append(", ");
         }
-        stackInfo = stackInfo.substring(0, stackInfo.length() - 2);
+        stackInfo = new StringBuilder(stackInfo.substring(0, stackInfo.length() - 2));
         printWriter.println(stackInfo);
         printWriter.flush();
     }
 
     public void logTradeCancelled(Player player, Collection<ItemStack> items) {
-        String stackInfo = "[CANCELLED] Returned to " + player.getName() + ": ";
-        if (items.size() == 0) stackInfo += "nothing, ";
+        StringBuilder stackInfo = new StringBuilder("[CANCELLED] Returned to " + player.getName() + ": ");
+        if (items.size() == 0) stackInfo.append("nothing, ");
         for (ItemStack item : items) {
-            stackInfo += item.getType().name() + " x" + item.getAmount() + ", ";
+            stackInfo.append(item.getType().name()).append(" x").append(item.getAmount()).append(", ");
         }
-        stackInfo = stackInfo.substring(0, stackInfo.length() - 2);
+        stackInfo = new StringBuilder(stackInfo.substring(0, stackInfo.length() - 2));
         printWriter.println(stackInfo);
         printWriter.flush();
     }

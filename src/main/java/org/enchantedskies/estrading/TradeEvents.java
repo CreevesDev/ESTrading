@@ -18,12 +18,21 @@ import java.util.*;
 
 public class TradeEvents implements Listener {
     private final ESTrading plugin = ESTrading.getInstance();
+    private final HashSet<InventoryAction> bannedActions = new HashSet<>();
     private final ItemStack cancelItem;
     private final ItemStack unacceptedItem;
     private final ItemStack verifyItem;
     private final ItemStack acceptedItem;
 
     public TradeEvents() {
+        bannedActions.add(InventoryAction.CLONE_STACK);
+        bannedActions.add(InventoryAction.COLLECT_TO_CURSOR);
+        bannedActions.add(InventoryAction.DROP_ALL_CURSOR);
+        bannedActions.add(InventoryAction.DROP_ALL_SLOT);
+        bannedActions.add(InventoryAction.DROP_ONE_CURSOR);
+        bannedActions.add(InventoryAction.DROP_ONE_SLOT);
+        bannedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD); //CHECK ME
+        bannedActions.add(InventoryAction.HOTBAR_SWAP); //CHECK ME
 
         cancelItem = new ItemStack(Material.RED_WOOL);
         ItemMeta cancelMeta = cancelItem.getItemMeta();
@@ -59,15 +68,6 @@ public class TradeEvents implements Listener {
         Inventory clickedInv = event.getClickedInventory();
         if (clickedInv == null) return;
         InventoryAction invAction = event.getAction();
-        HashSet<InventoryAction> bannedActions = new HashSet<>();
-        bannedActions.add(InventoryAction.CLONE_STACK);
-        bannedActions.add(InventoryAction.COLLECT_TO_CURSOR);
-        bannedActions.add(InventoryAction.DROP_ALL_CURSOR);
-        bannedActions.add(InventoryAction.DROP_ALL_SLOT);
-        bannedActions.add(InventoryAction.DROP_ONE_CURSOR);
-        bannedActions.add(InventoryAction.DROP_ONE_SLOT);
-        bannedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD); //CHECK ME
-        bannedActions.add(InventoryAction.HOTBAR_SWAP); //CHECK ME
 
         if (invAction == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
             if (clickedInv.getType() != InventoryType.CHEST) {
@@ -185,8 +185,7 @@ public class TradeEvents implements Listener {
 
     @EventHandler
     public void onItemPickup(EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
-        Player player = (Player) event.getEntity();
+        if (!(event.getEntity() instanceof Player player)) return;
         if (!ESTrading.tradeManager.getTradingPlayers().contains(player.getUniqueId())) return;
         event.setCancelled(true);
     }

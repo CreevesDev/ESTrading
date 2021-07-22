@@ -36,8 +36,8 @@ public class TradeSession {
     public void completeTrade() {
         Player player1 = Bukkit.getPlayer(trader1.getPlayerUUID());
         Player player2 = Bukkit.getPlayer(trader2.getPlayerUUID());
-        Collection<ItemStack> itemSet1 = trader1.sortAndGetOfferedItems();
-        Collection<ItemStack> itemSet2 = trader2.sortAndGetOfferedItems();
+        Collection<ItemStack> itemSet1 = trader1.getOfferedItems();
+        Collection<ItemStack> itemSet2 = trader2.getOfferedItems();
         giveItemsToPlayer(itemSet2, player1);
         giveItemsToPlayer(itemSet1, player2);
         trader1.completeTrade();
@@ -59,8 +59,8 @@ public class TradeSession {
     public void cancelTrade() {
         Player player1 = Bukkit.getPlayer(trader1.getPlayerUUID());
         Player player2 = Bukkit.getPlayer(trader2.getPlayerUUID());
-        Collection<ItemStack> itemSet1 = trader1.sortAndGetOfferedItems();
-        Collection<ItemStack> itemSet2 = trader2.sortAndGetOfferedItems();
+        Collection<ItemStack> itemSet1 = trader1.getOfferedItems();
+        Collection<ItemStack> itemSet2 = trader2.getOfferedItems();
         giveItemsToPlayer(itemSet1, player1);
         giveItemsToPlayer(itemSet2, player2);
         trader1.cancelTrade();

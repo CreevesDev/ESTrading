@@ -40,7 +40,7 @@ public class Trader {
         ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
         skullMeta.setOwningPlayer(trader2);
-        skullMeta.setDisplayName("§e" + trader.getName());
+        skullMeta.setDisplayName("§e" + trader2.getName());
         playerHead.setItemMeta(skullMeta);
 
         List<String> confirmLore = new ArrayList<>();
@@ -101,24 +101,8 @@ public class Trader {
         return status;
     }
 
-    public Collection<ItemStack> sortAndGetOfferedItems() {
-        Collection<ItemStack> sortedItems = new ArrayList<>();
-        for (ItemStack offeredItem : offeredItems.values()) {
-            for (ItemStack sortedItem : sortedItems) {
-                if (sortedItem.getAmount() == sortedItem.getMaxStackSize()) continue;
-                if (sortedItem.getType() != offeredItem.getType()) continue;
-                int spaceInStack = offeredItem.getMaxStackSize() - offeredItem.getAmount();
-                if (offeredItem.getAmount() > spaceInStack) {
-                    offeredItem.setAmount(offeredItem.getAmount() - spaceInStack);
-                    sortedItem.setAmount(sortedItem.getAmount() + spaceInStack);
-                } else {
-                    sortedItem.setAmount(sortedItem.getAmount() + offeredItem.getAmount());
-                    offeredItem.setAmount(0);
-                }
-            }
-            if (offeredItem.getAmount() > 0) sortedItems.add(offeredItem);
-        }
-        return sortedItems;
+    public Collection<ItemStack> getOfferedItems() {
+        return offeredItems.values();
     }
 
     public void addItem(ItemStack item, int itemLoc) {
@@ -153,9 +137,9 @@ public class Trader {
 
     public void setTraderStatus(String thisStatus) {
         switch (thisStatus) {
-            case "unaccepted": setStatusGlass(unacceptedGlassItem); break;
-            case "checking": setStatusGlass(verifyGlassItem); break;
-            case "accepted": setStatusGlass(acceptedGlassItem); break;
+            case "unaccepted" -> setStatusGlass(unacceptedGlassItem);
+            case "checking" -> setStatusGlass(verifyGlassItem);
+            case "accepted" -> setStatusGlass(acceptedGlassItem);
         }
     }
 
